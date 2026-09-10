@@ -2,6 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './assets/styles/global.css'
+import { registerSW } from 'virtual:pwa-register'
+
+// Registro automático del Service Worker para soporte PWA
+registerSW({ immediate: true })
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

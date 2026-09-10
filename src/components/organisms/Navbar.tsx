@@ -139,8 +139,6 @@ const Navbar: React.FC = () => {
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-space-black/98 z-[1010] flex flex-col items-center justify-center gap-10 md:hidden backdrop-blur-3xl"
               >
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
-
                 <button onClick={close} className="absolute top-10 right-10 text-white/20 hover:text-white p-2 transition-colors">
                   <X className="w-10 h-10" />
                 </button>
