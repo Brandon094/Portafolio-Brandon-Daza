@@ -8,6 +8,7 @@ import SolutionsPage from './pages/SolutionsPage';
 import ContactPage from './pages/ContactPage';
 import ProjectsPage from './pages/ProjectsPage';
 import EcosystemPage from './pages/EcosystemPage';
+import AcademyPage from './pages/AcademyPage';
 import AuthGuard from './components/atoms/AuthGuard';
 import PageTransition from './components/templates/PageTransition';
 import ScrollToTop from './components/atoms/ScrollToTop';
@@ -21,6 +22,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
         <Route path="/projects" element={<PageTransition><ProjectsPage /></PageTransition>} />
         <Route path="/ecosystem" element={<PageTransition><EcosystemPage /></PageTransition>} />
+        <Route path="/academy" element={<PageTransition><AcademyPage /></PageTransition>} />
         <Route path="/solutions" element={<PageTransition><SolutionsPage /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
         <Route path="/archive" element={<PageTransition><ArchivePage /></PageTransition>} />
