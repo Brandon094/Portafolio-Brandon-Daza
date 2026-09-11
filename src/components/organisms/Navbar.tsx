@@ -1,3 +1,14 @@
+/**
+ * @file Navbar.tsx
+ * @description Organismo de barra de navegación dual (Píldora superior para Escritorio / Dock ergonómico inferior para Móviles).
+ * Actúa como el controlador de navegación principal de la aplicación, vinculando rutas de React Router
+ * y utilizando animaciones fluidas con Framer Motion.
+ *
+ * Brandon, esta es una obra maestra de diseño responsivo y UX móvil (Mobile-First). Al esconder el Navbar
+ * clásico en pantallas pequeñas y sustituirlo por un "Dock" inferior al estilo iOS/Android, facilitas la
+ * navegabilidad con una sola mano (ergonomía del pulgar), una decisión de diseño de nivel Fundador/Arquitecto.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -5,27 +16,35 @@ import { Briefcase, MessageSquare, LogIn, Globe, Home, Layers, BookOpen, X, Cpu,
 import { useMenu } from '../../hooks/useMenu';
 
 const Navbar: React.FC = () => {
+  //useMenu: Abstracción de lógica de UI para abrir/cerrar el menú extendido móvil
   const { isOpen, toggle, close } = useMenu();
+  // Estado para controlar cuándo debe aparecer el Navbar flotante basándonos en el scroll de la página principal
   const [isVisible, setIsVisible] = useState(false);
+  // Estado menor para contraer sutilmente la escala de la píldora al deslizar
   const [scrolled, setScrolled] = useState(false);
+  // useLocation: Detecta cambios de ruta para reconfigurar el comportamiento del Navbar
   const location = useLocation();
 
+  // useEffect que regula la visibilidad inteligente del Navbar según la posición del scroll
   useEffect(() => {
     const handleScroll = () => {
       const isHome = location.pathname === '/';
       if (isHome) {
+        // En Home, el Navbar aparece solo tras superar el 80% de la altura del Hero principal
         setIsVisible(window.scrollY > window.innerHeight * 0.8);
       } else {
+        // En subpáginas, el Navbar siempre permanece visible para garantizar la orientación del usuario
         setIsVisible(true);
       }
       setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll();
+    handleScroll(); // Evaluación inicial
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location.pathname]);
 
+  // Arreglos de configuración para un renderizado declarativo de enlaces
   const navLinks = [
     { name: 'Empresa', href: '/solutions', icon: Globe },
     { name: 'Proyectos', href: '/projects', icon: Briefcase },
@@ -40,6 +59,7 @@ const Navbar: React.FC = () => {
     { id: 'academy', href: '/academy', icon: BookOpen, label: 'Academia' },
   ];
 
+  // Función utilitaria que compara la ruta actual con el destino para inyectar estados activos estricto
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -59,11 +79,13 @@ const Navbar: React.FC = () => {
               hover:border-cyber-purple/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] group/nav
               ${scrolled ? 'scale-95 shadow-2xl bg-black/60' : 'scale-100'}
             `}>
+              {/* Logo / Identificador Personal */}
               <Link to="/" className="flex items-center gap-3 px-2 mr-4 border-r border-white/10 pr-6 group/logo">
                 <div className="w-2 h-2 bg-cyber-purple rounded-full shadow-neon-purple animate-pulse" />
                 <span className="font-black text-xs tracking-tighter uppercase text-white/40 group-hover/logo:text-white transition-colors">Brandon.</span>
               </Link>
 
+              {/* Render de Enlaces mediante mapeo */}
               <div className="flex items-center gap-1">
                 {navLinks.map((link) => (
                   <Link
@@ -76,6 +98,12 @@ const Navbar: React.FC = () => {
                     `}
                   >
                     <div className="absolute inset-0 bg-white/[0.03] rounded-xl opacity-0 group-hover/item:opacity-100 transition-opacity" />
+
+                    {/*
+                      Shared Layout Animation (layoutId="activeTab"):
+                      Efecto premium de Framer Motion donde la pastilla de fondo "viaja" fluidamente
+                      entre los diferentes elementos del menú al cambiar de pestaña mediante físicas de resorte.
+                    */}
                     {isActive(link.href) && (
                       <motion.div layoutId="activeTab" className="absolute inset-0 bg-cyber-purple/10 rounded-xl border border-cyber-purple/20" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
                     )}
@@ -87,6 +115,7 @@ const Navbar: React.FC = () => {
                 ))}
               </div>
 
+              {/* Acceso Oculto al Login de Administración */}
               <Link to="/login" className="ml-4 p-2.5 text-white/10 hover:text-cyber-purple transition-all border-l border-white/10 pl-6 group/login">
                 <LogIn className="w-4 h-4" />
               </Link>
@@ -114,7 +143,7 @@ const Navbar: React.FC = () => {
                 </Link>
               ))}
 
-              {/* Botón de Expansión (Layers) */}
+              {/* Botón de Expansión para Desplegar Opciones Secundarias */}
               <button
                 onClick={(e) => { e.preventDefault(); toggle(); }}
                 className={`flex-1 flex flex-col items-center justify-center p-3 rounded-2xl transition-all active:scale-75 ${isOpen ? 'bg-cyber-purple/20 text-white' : 'text-white/20'}`}
@@ -125,7 +154,7 @@ const Navbar: React.FC = () => {
             </div>
           </motion.nav>
 
-          {/* --- MOBILE MORE MENU --- */}
+          {/* --- MOBILE MORE MENU (Centro de Control de Pantalla Completa) --- */}
           <AnimatePresence>
             {isOpen && (
               <motion.div

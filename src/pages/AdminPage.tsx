@@ -10,65 +10,85 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Terminal, Activity, Inbox, Database, PlusCircle, Save,
   XCircle, Trash2, Edit3, BarChart3, Globe, Smartphone,
-  LayoutDashboard, FolderKanban, MessageSquare, ShieldCheck, Cpu, Signal
+  LayoutDashboard, FolderKanban, MessageSquare, ShieldCheck, Cpu, Signal, Image as ImageIcon
 } from 'lucide-react';
 
+/**
+ * @file AdminPage.tsx
+ * @description Centro de Mando Administrativo del Ecosistema.
+ * Implementa una arquitectura de gestión de estado compleja mediante React Hooks (MVVM).
+ * Proporciona telemetría en tiempo real, gestión de leads (mensajes) y repositorio de activos (CRUD de proyectos).
+ */
 const AdminPage: React.FC = () => {
-  const { projects } = useProjects();
-  const { stats } = useAnalytics();
-  const [leads, setLeads] = useState<any[]>([]);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [logs, setLogs] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'repository'>('dashboard');
-  const [showForm, setShowForm] = useState(false);
+  // --- VIEWMODELS (Custom Hooks) ---
+  const { projects } = useProjects(); // Sincroniza la lista de proyectos en tiempo real
+  const { stats } = useAnalytics();   // Sincroniza estadísticas globales de tráfico
 
+  // --- ESTADOS LOCALES (Memory Slots) ---
+  const [leads, setLeads] = useState<any[]>([]); // Almacena mensajes de contacto
+  const [editingId, setEditingId] = useState<string | null>(null); // Puntero para edición de activos
+  const [logs, setLogs] = useState<string[]>([]); // Registro histórico de la sesión
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'repository'>('dashboard'); // Gestor de vistas
+  const [showForm, setShowForm] = useState(false); // Estado del búnker de inyección de datos
+
+  // Estado atómico del formulario de proyectos
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    images: '',
-    keyPoints: '',
-    technologies: '',
-    status: 'completed',
-    progress: 100,
-    liveUrl: '',
-    playStoreUrl: ''
+    title: '', description: '', images: '', featureGraphic: '',
+    keyPoints: '', technologies: '', status: 'completed',
+    progress: 100, liveUrl: '', playStoreUrl: ''
   });
 
+  /**
+   * addLog: Registra eventos en la consola virtual del mainframe.
+   */
   const addLog = (msg: string) => {
     const time = new Date().toLocaleTimeString();
     setLogs(prev => [`[${time}] ${msg}`, ...prev].slice(0, 20));
   };
 
+  /**
+   * useEffect: Inicializa las suscripciones de datos al montar la terminal.
+   */
   useEffect(() => {
     addLog("Acceso de Seguridad Nivel 4. Bienvenido, Brandon.");
     const leadsRef = ref(rtdb, 'leads');
+
+    // onValue: Crea un stream constante con la Realtime Database
     const unsub = onValue(leadsRef, (snap) => {
       const data = snap.val();
       if (data) {
+        // Convertimos el objeto JSON a un array descendente por fecha
         setLeads(Object.keys(data).map(k => ({ ...data[k], id: k })).reverse());
         addLog("Sincronización de señales exitosa.");
       }
     });
+
+    // Cleanup: Cierra la tubería al cerrar la terminal
     return () => unsub();
   }, []);
 
+  /**
+   * handleSubmit: Procesa el envío del formulario para crear o actualizar activos.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Detenemos recarga nativa para manejo SPA
+
+    // Formateo de datos: Conversión de strings (CSV) a arrays técnicos
     const projectData = {
       ...form,
       images: form.images.split(',').map(i => i.trim()),
       keyPoints: form.keyPoints.split('\n').filter(p => p.trim()),
       technologies: form.technologies.split(',').map(t => t.trim()),
-      progress: Number(form.progress),
-      liveUrl: form.liveUrl.trim(),
-      playStoreUrl: form.playStoreUrl.trim()
+      progress: Number(form.progress)
     };
 
     try {
       if (editingId) {
+        // Actualización de registro existente vía PUT (update)
         await update(ref(rtdb, `projects/${editingId}`), projectData);
         addLog(`Protocolo: Registro "${form.title}" actualizado.`);
       } else {
+        // Inyección de nuevo activo vía POST (push)
         await push(ref(rtdb, 'projects'), projectData);
         addLog(`Protocolo: Inyección de activo "${form.title}" completada.`);
       }
@@ -78,29 +98,31 @@ const AdminPage: React.FC = () => {
     }
   };
 
+  /**
+   * handleEdit: Carga los datos de un proyecto en el formulario para sobreescritura.
+   */
   const handleEdit = (p: any) => {
     setEditingId(p.id);
     setForm({
-      title: p.title,
-      description: p.description,
-      images: p.images.join(', '),
-      keyPoints: p.keyPoints.join('\n'),
-      technologies: p.technologies.join(', '),
-      status: p.status || 'completed',
-      progress: p.progress || 100,
-      liveUrl: p.liveUrl || '',
-      playStoreUrl: p.playStoreUrl || ''
+      title: p.title, description: p.description,
+      images: p.images.join(', '), featureGraphic: p.featureGraphic || '',
+      keyPoints: p.keyPoints.join('\n'), technologies: p.technologies.join(', '),
+      status: p.status || 'completed', progress: p.progress || 100,
+      liveUrl: p.liveUrl || '', playStoreUrl: p.playStoreUrl || ''
     });
     setShowForm(true);
     addLog(`Sistema: Preparando sobreescritura de "${p.title}".`);
   };
 
   const resetForm = () => {
-    setForm({ title: '', description: '', images: '', keyPoints: '', technologies: '', status: 'completed', progress: 100, liveUrl: '', playStoreUrl: '' });
+    setForm({ title: '', description: '', images: '', featureGraphic: '', keyPoints: '', technologies: '', status: 'completed', progress: 100, liveUrl: '', playStoreUrl: '' });
     setEditingId(null);
     setShowForm(false);
   };
 
+  /**
+   * handleDelete: Ejecuta purga permanente de datos.
+   */
   const handleDelete = async (id: string, title: string) => {
     if (window.confirm(`¿Confirmar purga permanente de "${title}"?`)) {
       await remove(ref(rtdb, `projects/${id}`));
@@ -112,13 +134,13 @@ const AdminPage: React.FC = () => {
     <MainLayout>
       <div className="pt-32 pb-20 px-[5%] max-w-7xl mx-auto font-sans min-h-screen relative overflow-hidden">
 
-        {/* Dynamic Background Auras */}
+        {/* FONDO ANIMADO: Auras dinámicas (GPU Accelerated) */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
            <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 10, repeat: Infinity }} className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] bg-cyber-purple/15 blur-[150px] rounded-full" />
            <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 15, repeat: Infinity, delay: 2 }} className="absolute bottom-0 -left-[10%] w-[50%] h-[50%] bg-cyber-cyan/10 blur-[150px] rounded-full" />
         </div>
 
-        {/* HEADER */}
+        {/* HEADER: Estado de sesión y control de terminal */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 relative z-10">
           <div className="flex items-center gap-6">
             <div className="p-4 bg-cyber-purple/10 rounded-2xl border border-cyber-purple/20 shadow-neon-purple">
@@ -137,7 +159,7 @@ const AdminPage: React.FC = () => {
           </Button>
         </div>
 
-        {/* TELEMETRY BAR */}
+        {/* TELEMETRY BAR: Visualización de señales globales */}
         <div className="flex flex-wrap gap-4 mb-10 bg-white/[0.01] p-5 rounded-[2rem] border border-white/5 relative z-10 backdrop-blur-md">
            {[
              { icon: Activity, t: 'Señales Globales', v: stats.visits, c: 'text-cyber-cyan' },
@@ -165,7 +187,7 @@ const AdminPage: React.FC = () => {
            </div>
         </div>
 
-        {/* NAVIGATION SYSTEM */}
+        {/* NAVIGATION TABS: Conmutación de búnkeres de gestión */}
         <div className="flex gap-2 mb-12 bg-white/[0.02] p-2 rounded-[1.5rem] border border-white/5 w-fit relative z-10">
           {[
             { id: 'dashboard', icon: LayoutDashboard, label: 'Control Center' },
@@ -186,22 +208,21 @@ const AdminPage: React.FC = () => {
           ))}
         </div>
 
-        {/* VIEWPORT AREA */}
+        {/* ÁREA DE RENDERIZADO DINÁMICO */}
         <div className="relative z-10 min-h-[60vh]">
           <AnimatePresence mode="wait">
 
-            {/* VIEW 01: DASHBOARD */}
+            {/* VIEW 01: DASHBOARD (Neural Inbox + Logs) */}
             {activeTab === 'dashboard' && (
               <motion.div key="dashboard" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.5 }} className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-                {/* NEURAL INBOX */}
                 <div className="lg:col-span-2 space-y-8">
                    <div className="flex items-center gap-4 opacity-40">
                       <Inbox className="w-5 h-5 text-cyber-purple" />
                       <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Neural Inbox Signals ({leads.length})</h3>
                    </div>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {leads.length > 0 ? leads.map(l => (
+                      {leads.map(l => (
                         <div key={l.id} className="glass-card p-8 bg-black/20 hover:border-cyber-purple/40 hover:bg-white/[0.02] group relative">
                           <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-purple/5 blur-3xl" />
                           <div className="flex justify-between items-center mb-8">
@@ -215,15 +236,10 @@ const AdminPage: React.FC = () => {
                           <div className="h-[1px] w-full bg-white/5 mb-6" />
                           <p className="text-white/60 text-sm leading-relaxed font-light italic">"{l.message}"</p>
                         </div>
-                      )) : (
-                        <div className="col-span-full py-40 text-center border border-dashed border-white/5 rounded-[4rem] opacity-20">
-                           <p className="text-white font-mono uppercase tracking-[0.6em] text-xs">Waiting for external data stream...</p>
-                        </div>
-                      )}
+                      ))}
                    </div>
                 </div>
 
-                {/* SYSTEM CORE CONSOLE */}
                 <div className="space-y-8">
                    <div className="flex items-center gap-4 opacity-40">
                       <Terminal className="w-5 h-5 text-cyber-purple" />
@@ -247,7 +263,7 @@ const AdminPage: React.FC = () => {
               </motion.div>
             )}
 
-            {/* VIEW 02: REPOSITORY */}
+            {/* VIEW 02: REPOSITORY (Asset CRUD) */}
             {activeTab === 'repository' && (
               <motion.div key="repository" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.5 }} className="space-y-10">
                 {!showForm ? (
@@ -266,8 +282,8 @@ const AdminPage: React.FC = () => {
                              <Database className="w-6 h-6" />
                            </div>
                            <div className="flex gap-2">
-                             <button onClick={() => handleEdit(p)} className="p-3 bg-white/5 hover:bg-cyber-purple text-white/20 hover:text-white transition-all rounded-xl border border-white/5"><Edit3 className="w-4 h-4" /></button>
-                             <button onClick={() => handleDelete(p.id, p.title)} className="p-3 bg-white/5 hover:bg-cyber-orange text-white/20 hover:text-white transition-all rounded-xl border border-white/5"><Trash2 className="w-4 h-4" /></button>
+                             <button onClick={() => handleEdit(p)} className="p-3 bg-white/5 hover:bg-cyber-purple text-white/20 hover:text-cyber-purple transition-all rounded-xl border border-white/5"><Edit3 className="w-4 h-4" /></button>
+                             <button onClick={() => handleDelete(p.id, p.title)} className="p-3 bg-white/5 hover:bg-cyber-orange text-white/20 hover:text-cyber-orange transition-all rounded-xl border border-white/5"><Trash2 className="w-4 h-4" /></button>
                            </div>
                         </div>
                         <h4 className="text-white font-black text-2xl mb-3 uppercase tracking-tighter italic leading-none">{p.title}</h4>
@@ -283,6 +299,7 @@ const AdminPage: React.FC = () => {
                     ))}
                   </div>
                 ) : (
+                  // BÚNKER DE INYECCIÓN (Full Form)
                   <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#0A0A0A] border border-white/10 p-10 md:p-16 rounded-[4rem] relative overflow-hidden max-w-4xl mx-auto shadow-[0_0_100px_rgba(0,0,0,1)]">
                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-purple to-transparent opacity-40 animate-pulse" />
                      <div className="flex justify-between items-center mb-16">
@@ -307,6 +324,10 @@ const AdminPage: React.FC = () => {
                           <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full bg-white/[0.02] border border-white/5 p-6 text-sm text-white rounded-[2rem] outline-none focus:border-cyber-purple/40 focus:bg-white/[0.05] transition-all h-40 resize-none" required />
                         </div>
                         <div className="space-y-2">
+                          <label className="text-[10px] font-mono text-cyber-purple font-bold uppercase tracking-[0.4em] ml-2 flex items-center gap-2"><ImageIcon className="w-3 h-3"/> Gráfico Funcional (Feature Graphic)</label>
+                          <input value={form.featureGraphic} onChange={e => setForm({...form, featureGraphic: e.target.value})} className="w-full bg-white/[0.02] border border-white/5 p-5 text-sm text-white rounded-[1.5rem] outline-none focus:border-cyber-purple/40" placeholder="URL del banner promocional..." />
+                        </div>
+                        <div className="space-y-2">
                           <label className="text-[10px] font-mono text-cyber-purple font-bold uppercase tracking-[0.4em] ml-2">Recursos Visuales (CSV)</label>
                           <input value={form.images} onChange={e => setForm({...form, images: e.target.value})} className="w-full bg-white/[0.02] border border-white/5 p-5 text-sm text-white rounded-[1.5rem] outline-none focus:border-cyber-purple/40" />
                         </div>
@@ -324,7 +345,7 @@ const AdminPage: React.FC = () => {
                         </div>
                         <div className="md:col-span-2 space-y-2">
                           <label className="text-[10px] font-mono text-cyber-purple font-bold uppercase tracking-[0.4em] ml-2">Pilares de Arquitectura (Líneas)</label>
-                          <textarea value={form.keyPoints} onChange={e => setForm({...form, keyPoints: e.target.value})} className="w-full bg-white/[0.02] border border-white/5 p-6 text-sm text-white rounded-[2rem] outline-none focus:border-cyber-purple/40 h-32 resize-none" />
+                          <textarea value={form.keyPoints} onChange={e => setForm({...form, keyPoints: e.target.value})} className="w-full bg-white/[0.02] border border-white/5 p-6 text-sm text-white rounded-[2rem] outline-none focus:border-cyber-purple/40 h-32 resize-none" placeholder="Pilar 1&#10;Pilar 2..." />
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-mono text-cyber-purple font-bold uppercase tracking-[0.4em] ml-2">Estado del Despliegue</label>

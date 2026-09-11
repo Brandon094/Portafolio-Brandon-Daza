@@ -1,3 +1,13 @@
+/**
+ * @file SolutionsPage.tsx
+ * @description Componente de nivel Página (Page) centrado en detallar la propuesta de servicios de 'ChopCode Solutions'.
+ * Diseña la vitrina comercial estructurando un catálogo de soluciones técnicas (`services`) e hitos corporativos.
+ *
+ * Brandon, esta página condensa el core comercial de tu consultora tecnológica. El uso de efectos hover combinados
+ * con rotaciones leves (`group-hover:rotate-3`) y sombras personalizadas (`glow`) dota de una terminación cosmética
+ * de altísimo impacto visual, conectando la precisión matemática con el refinamiento estético.
+ */
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Settings, ShoppingCart, Zap, BarChart3, ShieldCheck, ChevronRight } from 'lucide-react';
@@ -5,6 +15,7 @@ import MainLayout from '../components/templates/MainLayout';
 import FadeInSection from '../components/atoms/FadeInSection';
 import Button from '../components/atoms/Button';
 
+// Arreglo de configuración estática para los bloques de soluciones provistos por la firma
 const services = [
   {
     title: 'Software a Medida',
@@ -32,9 +43,9 @@ const services = [
 const SolutionsPage: React.FC = () => {
   return (
     <MainLayout>
-      {/* HERO SECTION - VIBRANT */}
+      {/* SECCIÓN HERO - ARQUITECTURA CORPORATIVA */}
       <section className="pt-48 pb-20 relative overflow-hidden bg-space-black">
-        {/* Dynamic Background Auras */}
+        {/* Auras de neón ambientales */}
         <div className="absolute top-0 left-0 w-full h-full">
            <motion.div
              animate={{ scale: [1, 1.4, 1], x: [0, -30, 0], y: [0, 60, 0] }}
@@ -67,7 +78,7 @@ const SolutionsPage: React.FC = () => {
         </div>
       </section>
 
-      {/* SERVICES GRID - HIGH CONTRAST */}
+      {/* GRID DE SERVICIOS - ALTO CONTRASTE */}
       <FadeInSection className="py-32">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -91,7 +102,7 @@ const SolutionsPage: React.FC = () => {
         </div>
       </FadeInSection>
 
-      {/* VALUE PROP - VIBRANT */}
+      {/* PROPUESTA DE VALOR ADICIONAL Y MANIFIESTO FILOSÓFICO */}
       <FadeInSection className="py-32 bg-white/[0.01] border-y border-white/5 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyber-purple/5 blur-[120px] -z-10" />
 
@@ -118,6 +129,7 @@ const SolutionsPage: React.FC = () => {
               </div>
             </div>
 
+            {/* MANIFIESTO FILOSÓFICO CORPORATIVO */}
             <div className="bg-[#0A0A0A] border border-white/10 p-12 rounded-[3rem] relative overflow-hidden group shadow-2xl">
               <div className="absolute top-0 right-0 w-48 h-48 bg-cyber-purple/10 blur-[80px] -z-10" />
               <h3 className="text-[10px] font-mono text-cyber-purple font-bold uppercase tracking-[0.4em] mb-8">// Nuestra Filosofía</h3>
@@ -130,13 +142,9 @@ const SolutionsPage: React.FC = () => {
         </div>
       </FadeInSection>
 
-      {/* FINAL CTA - VIBRANT GLOW */}
+      {/* SECCIÓN FINAL (CTA LLAMADO A LA ACCIÓN CON PULSO NEÓN GLOW) */}
       <section className="py-48 text-center px-6 relative overflow-hidden">
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 6, repeat: Infinity }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyber-purple/10 blur-[150px] rounded-full -z-10"
-        />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyber-purple/10 blur-[150px] rounded-full -z-10" />
 
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}

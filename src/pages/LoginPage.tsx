@@ -1,3 +1,14 @@
+/**
+ * @file LoginPage.tsx
+ * @description Componente de nivel Página (Page) de Autenticación de Administrador.
+ * Implementa el protocolo de autenticación basado en correo electrónico y contraseña
+ * interactuando de forma síncrona con el SDK de Firebase Authentication (`signInWithEmailAndPassword`).
+ *
+ * Brandon, resguardar el panel de administración tras un login robusto y reactivo es un requerimiento esencial.
+ * Aquí manejas de forma explícita estados booleanos de progreso (`isAuthenticating`) para inhabilitar
+ * reenvíos accidentales y capturas excepciones genéricas (`catch`) para informar al usuario sobre credenciales erróneas.
+ */
+
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
@@ -8,21 +19,33 @@ import { motion } from 'framer-motion';
 import { Lock, Key, User, Cpu, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
+  // useState: Estados locales controlados para la captura fluida de credenciales de acceso
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  // Estado reactivo para almacenar y renderizar mensajes de rechazo de autenticación
   const [error, setError] = useState('');
+  // Bloqueo lógico visual mientras se efectúa la consulta en los servidores remotos de Firebase Auth
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  // useNavigate: Hook de React Router para despachar redirecciones seguras de rutas en el cliente
   const navigate = useNavigate();
 
+  /**
+   * handleLogin
+   * Gestiona el despacho del formulario. Valida criptográficamente las credenciales contra Firebase.
+   */
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Previene recargos nativos
     setIsAuthenticating(true);
     setError('');
 
     try {
+      // Invocación del servicio asíncrono de Firebase Auth
       await signInWithEmailAndPassword(auth, email, password);
+      // Al ser exitoso, redirige inmediatamente al mainframe administrativo
       navigate('/admin');
     } catch (err) {
+      // Control preventivo de excepciones de seguridad
       setError('Acceso denegado: Credenciales inválidas.');
       setIsAuthenticating(false);
     }
@@ -32,7 +55,7 @@ const LoginPage: React.FC = () => {
     <MainLayout>
       <section className="min-h-screen flex items-center justify-center bg-space-black relative overflow-hidden px-6">
 
-        {/* Dynamic Background Auras - Consistent with Ecosystem */}
+        {/* Fondos Neón atmosféricos oscilantes */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
            <motion.div
              animate={{ scale: [1, 1.2, 1], x: [0, 30, 0], y: [0, 20, 0] }}
@@ -46,13 +69,14 @@ const LoginPage: React.FC = () => {
            />
         </div>
 
+        {/* Tarjeta de Autenticación */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="w-full max-w-md relative z-10"
         >
-          {/* HEADER VIBRANTE */}
+          {/* LOGO E IDENTIDAD DE SEGURIDAD */}
           <div className="text-center mb-12">
             <motion.div
               initial={{ scale: 0.8 }}
@@ -69,11 +93,12 @@ const LoginPage: React.FC = () => {
             </h1>
           </div>
 
-          {/* FORMULARIO PREMIUM */}
+          {/* CUERPO DEL FORMULARIO CON ESTILO CYBERPUNK */}
           <div className="bg-[#0A0A0A] border border-white/10 rounded-[3rem] p-10 md:p-12 shadow-[0_0_80px_rgba(0,0,0,0.5)] relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-purple/40 to-transparent" />
 
             <form onSubmit={handleLogin} className="space-y-8">
+              {/* Bloque Input: Email / Identificador */}
               <div className="space-y-2">
                 <label className="text-[10px] font-mono text-white/20 uppercase tracking-widest ml-1">Identificador</label>
                 <div className="relative group">
@@ -89,6 +114,7 @@ const LoginPage: React.FC = () => {
                 </div>
               </div>
 
+              {/* Bloque Input: Clave Maestra */}
               <div className="space-y-2">
                 <label className="text-[10px] font-mono text-white/20 uppercase tracking-widest ml-1">Clave Maestra</label>
                 <div className="relative group">
@@ -104,12 +130,14 @@ const LoginPage: React.FC = () => {
                 </div>
               </div>
 
+              {/* FEEDBACK DE ERROR CONTROLADO */}
               {error && (
                 <div className="flex items-center gap-3 text-cyber-orange text-[10px] font-bold uppercase tracking-wider bg-cyber-orange/5 p-4 rounded-xl border border-cyber-orange/10 shadow-inner">
                   <Lock className="w-4 h-4" /> {error}
                 </div>
               )}
 
+              {/* BOTÓN DE DESPACHO / SUBMIT */}
               <div className="pt-4">
                 <Button
                   variant="primary"
@@ -125,7 +153,7 @@ const LoginPage: React.FC = () => {
             </form>
           </div>
 
-          {/* ACCIÓN DE RETORNO */}
+          {/* ACCIÓN REVERSA / SALIDA SEGURA */}
           <div className="mt-10 text-center">
             <button
               onClick={() => navigate('/')}

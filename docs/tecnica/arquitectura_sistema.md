@@ -1,68 +1,52 @@
-# Especificación de Arquitectura de Software v5.5
+# Especificación de Arquitectura de Software v7.5
 
 ## 1. Visión General
-El sistema está diseñado como una **Progressive Web App (PWA)** de alto rendimiento, optimizada para la narrativa inmersiva y la gestión de datos en tiempo real. Se fundamenta en la separación estricta de responsabilidades y la eficiencia en el renderizado de gráficos 2D/3D.
+El sistema es una **Progressive Web App (PWA)** de grado industrial, diseñada para la visualización técnica y el marketing estratégico de activos digitales. La arquitectura v7.5 introduce el concepto de **Functional Preview Strategy**, separando la imagen promocional (Banner) de las capturas de auditoría interna.
 
 ---
 
 ## 2. Patrones de Diseño Arquitectónico
 
 ### 2.1 MVVM (Model-View-ViewModel)
-Para garantizar la escalabilidad y mantenibilidad, se implementó el patrón MVVM utilizando las capacidades modernas de React:
-- **Model:** Entidades de datos tipadas en TypeScript (`src/models/`) y persistencia NoSQL en **Firebase Realtime Database**.
-- **ViewModel:** Encapsulado en **Custom Hooks** (`src/hooks/`). Estos actúan como mediadores, manejando la lógica de negocio, suscripciones a bases de datos y cálculos de telemetría.
-- **View:** Componentes funcionales de React estructurados bajo **Atomic Design**, encargados exclusivamente de la representación visual.
+- **Model:** Firebase Realtime Database para latencia mínima.
+- **ViewModel:** Hooks personalizados que encapsulan la lógica de sincronización y analíticas.
+- **View:** Componentes atómicos (React 18) encargados de la representación visual.
 
-### 2.2 Atomic Design (Diseño Atómico)
-La interfaz se descompone en componentes granulares:
-- **Atoms:** Componentes base (Botones, Inputs, Badges, Controladores de Scroll).
-- **Molecules:** Combinaciones de átomos (Formularios de contacto, Chips de infraestructura).
-- **Organisms:** Secciones complejas y autónomas (Navbar, ProjectCard, ScrollStory).
-- **Templates/Pages:** Estructuras de layout y rutas de la SPA.
+### 2.2 Functional Preview Pattern
+Las tarjetas de proyecto (`ProjectCard`) implementan un patrón de previsualización estática:
+- **Feature Graphic:** Muestra el gráfico de funciones principal.
+- **Internal Gallery:** Reservada para el `ProjectModal`, optimizando la carga inicial de la galería.
 
 ---
 
 ## 3. Arquitectura de Datos y Estado
 
-### 3.1 Persistencia Realtime
-- **Protocolo:** WebSockets (vía Firebase SDK).
-- **Sincronización:** Los cambios en los proyectos o mensajes recibidos en el panel administrativo se reflejan instantáneamente en todos los clientes conectados sin recarga de página.
-- **Estrategia Híbrida:** 
-    - **RTDB:** Latencia mínima para la suite "Go" y analíticas.
-    - **Local Storage:** Persistencia de preferencias de UI y caché de Service Workers.
+### 3.1 Gestión de Activos (Projects)
+La base de datos gestiona dos tipos de activos visuales por proyecto:
+1. `featureGraphic`: Imagen de portada de alta fidelidad (16:9).
+2. `images[]`: Array de capturas de pantalla de la interfaz real para inspección profunda.
 
-### 3.2 Seguridad y Acceso
-- **Autenticación:** Firebase Auth (Identity Platform).
-- **Protección de Rutas:** Implementación de un componente `AuthGuard` de alto nivel que intercepta el ciclo de vida de React para prevenir el acceso no autorizado al Centro de Mando.
+### 3.2 Telemetría en Tiempo Real
+Sincronización bidireccional entre el cliente y el Centro de Mando v4.5, permitiendo el monitoreo de señales globales instantáneamente.
 
 ---
 
 ## 4. Ingeniería de Performance y UX
 
-### 4.1 Pipeline de Animación (GPU Accelerated)
-El sistema de **Scrollytelling 3D** utiliza interpolación de valores de scroll mapeados a propiedades CSS aceleradas:
-- **Transformaciones:** Uso de `translate3d` y `scale` para forzar el uso de la GPU.
-- **Optimización de Memoria:** Factor de escala limitado a 15x para evitar la fragmentación de la memoria en dispositivos móviles.
-- **Hardware Hints:** Propiedad `will-change` aplicada estratégicamente para preparar las capas de renderizado del navegador.
+### 4.1 Visual Depth Protocol (Modales)
+El `ProjectModal` implementa un protocolo de visualización adaptativa:
+- **Object Contain:** Garantiza que las capturas móviles (verticales) no se recorten.
+- **Blur Ambient Background:** Capa secundaria desenfocada que rellena el espacio negativo del modal según el color de la captura activa.
 
-### 4.2 Asset Strategy (Estilo Stealth)
-- **Zero-HTTP Artifacts:** Uso de **Data URIs (Base64)** para texturas críticas (Grainy Noise), eliminando latencia de red y errores 404.
-- **Adaptive Blur:** Filtros de desenfoque dinámicos calculados según la potencia del dispositivo detectado.
+### 4.2 Scanner Engine
+Uso de animaciones CSS (`keyframes scan`) y SVG dinámicos para simular un análisis técnico sobre los gráficos de funciones en las tarjetas.
 
 ---
 
 ## 5. Infraestructura y Despliegue
 
-### 5.1 Capacidades PWA
-- **Manifest:** Definición de identidad standalone para instalación nativa.
-- **Service Workers:** Estrategia de **Stale-While-Revalidate** para asegurar que la app funcione sin conexión a internet manteniendo los datos actualizados al detectar señal.
-
-### 5.2 CI/CD Pipeline
-- **Build Engine:** Vite (Optimización Rollup).
-- **Hosting:** Firebase Global CDN con soporte para **HTTP/2 y SSL Automático**.
-- **Versioning:** Gestión de versiones semántica integrada en el "Centro de Mando".
-
----
+### 5.1 Despliegue en Firebase Hosting
+Optimizado para una distribución global mediante CDN con HTTPS y Service Workers activos para soporte offline.
 
 **Arquitecto Responsable:** Brandon Daza  
 **Empresa:** ChopCode Solutions  

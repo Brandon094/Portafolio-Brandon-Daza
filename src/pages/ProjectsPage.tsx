@@ -1,15 +1,28 @@
+/**
+ * @file ProjectsPage.tsx
+ * @description Componente de nivel Página (Page) que despliega la Galería de Ingeniería Completa.
+ * Consume `useProjects` para jalar los datos desde Firestore y divide algorítmicamente la colección
+ * en dos subgrupos (`completedProjects` e `inProgressProjects`) basándose en el estado de desarrollo (`status`).
+ *
+ * Brandon, alimentar dos filas independientes de marquesinas automáticas (`AutoProjectSlider`) configuradas en
+ * direcciones opuestas (`left` vs `right`) dota de un dinamismo cinemático espectacular al portafolio, emulando la
+ * visualización fluida de los tableros de control avanzados de la industria de software.
+ */
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import MainLayout from '../components/templates/MainLayout';
 import AutoProjectSlider from '../components/organisms/AutoProjectSlider';
 import Loader from '../components/atoms/Loader';
 import { useProjects } from '../hooks/useProjects';
-import { Zap, Code2, ChevronRight } from 'lucide-react';
+import { Zap, Code2, ChevronRight, Database } from 'lucide-react';
 import Button from '../components/atoms/Button';
 
 const ProjectsPage: React.FC = () => {
+  // Extraemos la colección e indicadores asíncronos desde el hook ViewModel centralizado
   const { projects, loading, error } = useProjects();
 
+  // Filtrado computado en tiempo de ejecución para clasificar los despliegues de ingeniería
   const completedProjects = projects.filter(p => p.status === 'completed' || !p.status);
   const inProgressProjects = projects.filter(p => p.status === 'in_progress');
 
@@ -17,7 +30,7 @@ const ProjectsPage: React.FC = () => {
     <MainLayout>
       <section className="pt-48 pb-20 bg-space-black min-h-screen overflow-hidden relative">
 
-        {/* Dynamic Background Auras */}
+        {/* Auras de neón ambientales en el fondo */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
            <motion.div
              animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -31,6 +44,7 @@ const ProjectsPage: React.FC = () => {
            />
         </div>
 
+        {/* CONTENEDOR TÍTULO PRINCIPAL */}
         <div className="container mx-auto px-6 mb-20 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -50,6 +64,7 @@ const ProjectsPage: React.FC = () => {
           </motion.div>
         </div>
 
+        {/* RENDERING DE CONTROL DE ESTADOS */}
         {loading ? (
           <Loader />
         ) : error ? (
@@ -72,7 +87,7 @@ const ProjectsPage: React.FC = () => {
         ) : (
           <div className="space-y-16 pb-32">
 
-            {/* ROW 01: COMPLETED DEPLOYMENTS */}
+            {/* FILA 01: DESPLIEGUES ESTABLES COMPLETADOS (Marquesina hacia la izquierda) */}
             {completedProjects.length > 0 && (
               <div className="relative group/row">
                 <div className="container mx-auto px-6 mb-8 flex items-center justify-between">
@@ -88,7 +103,7 @@ const ProjectsPage: React.FC = () => {
               </div>
             )}
 
-            {/* ROW 02: ACTIVE LABS */}
+            {/* FILA 02: OPERACIONES ACTIVAS EN LABORATORIO (Marquesina hacia la derecha) */}
             {inProgressProjects.length > 0 && (
               <div className="relative group/row pt-10">
                 <div className="container mx-auto px-6 mb-8 flex items-center justify-between">
@@ -107,7 +122,7 @@ const ProjectsPage: React.FC = () => {
           </div>
         )}
 
-        {/* FOOTER DECORATION */}
+        {/* PIE DECORATIVO SIMULADO */}
         <div className="container mx-auto px-6 pt-20 text-center opacity-20 relative z-10">
           <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-12" />
           <p className="text-white/40 font-mono text-[9px] uppercase tracking-[0.6em] mb-4 italic">

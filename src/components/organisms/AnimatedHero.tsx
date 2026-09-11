@@ -1,3 +1,14 @@
+/**
+ * @file AnimatedHero.tsx
+ * @description Organismo que constituye la sección de bienvenida principal (Hero) con altas dosis de animación visual.
+ * En la arquitectura de Diseño Atómico, es un Organismo porque unifica múltiples elementos estructurales,
+ * texto fluido, componentes atómicos de acción (Buttons) y orquesta el fondo atmosférico Cyberpunk interactivo.
+ *
+ * Brandon, esta es la tarjeta de presentación técnica e intelectual más importante de tu portafolio.
+ * El uso coordinado de delays en Framer Motion guía la atención del visitante secuencialmente desde tu rol técnico,
+ * pasando por tu nombre, hasta el call-to-action final.
+ */
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import Button from '../atoms/Button';
@@ -5,8 +16,14 @@ import Button from '../atoms/Button';
 const AnimatedHero: React.FC = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Abstract Background Elements */}
+
+      {/*
+        Abstract Background Elements:
+        Capa dedicada a renderizar esferas de neón difusas (Blur) que orbitan e interactúan en el fondo.
+        Esto crea profundidad espacial y una atmósfera inmersiva sin sobrecargar el hilo principal del navegador.
+      */}
       <div className="absolute inset-0 z-0">
+        {/* Esfera Neón Púrpura */}
         <motion.div
           animate={{
             scale: [1, 1.2, 1],
@@ -16,6 +33,7 @@ const AnimatedHero: React.FC = () => {
           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
           className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-cyber-purple/20 rounded-full blur-[120px]"
         />
+        {/* Esfera Neón Cian */}
         <motion.div
           animate={{
             scale: [1.2, 1, 1.2],
@@ -28,6 +46,7 @@ const AnimatedHero: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-6 relative z-10 text-center">
+        {/* Bloque 1: Badge de Rol Profesional */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -38,15 +57,18 @@ const AnimatedHero: React.FC = () => {
           </span>
         </motion.div>
 
+        {/* Bloque 2: Nombre Principal */}
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
+          // delay: 0.2 hace que aparezca sutilmente después del badge de rol
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-6xl md:text-8xl font-black mb-8 tracking-tighter"
         >
           Brandon <span className="text-gradient">Daza.</span>
         </motion.h1>
 
+        {/* Bloque 3: Propuesta de Valor y Empresa */}
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -57,6 +79,7 @@ const AnimatedHero: React.FC = () => {
           Transformo ideas complejas en experiencias digitales fluidas y escalables.
         </motion.p>
 
+        {/* Bloque 4: Botones de Acción Atómicos */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -72,6 +95,11 @@ const AnimatedHero: React.FC = () => {
         </motion.div>
       </div>
 
+      {/*
+        Scroll Indicator:
+        Icono animado de mouse al fondo que indica al usuario de forma intuitiva que puede hacer scroll.
+        Utiliza un rebote infinito en el eje Y (`y: [0, 10, 0]`).
+      */}
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}

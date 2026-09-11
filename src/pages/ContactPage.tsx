@@ -1,9 +1,21 @@
+/**
+ * @file ContactPage.tsx
+ * @description Componente de nivel Página (Page) dedicado exclusivamente a la gestión de captura de prospectos comerciales (Handshake).
+ * En la estructura de carpetas, consolida la maquetación en dos columnas (Información estratégica / Formulario interactivo).
+ *
+ * Brandon, como Diseñador del Sistema, observa el balance de este componente:
+ * El panel izquierdo provee accesos rápidos y fijos tipados para contacto alternativo (`contactData`),
+ * mientras el panel derecho opera como un nodo aislado estilizado como una terminal digital para enfocar al usuario
+ * en la ejecución del formulario.
+ */
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Linkedin, MessageSquare, MapPin, Github, Zap } from 'lucide-react';
 import MainLayout from '../components/templates/MainLayout';
 import ContactForm from '../components/molecules/ContactForm';
 
+// Configuración declarativa de hipervínculos para redes profesionales
 const contactData = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/brandondaza/', icon: Linkedin },
   { label: 'GitHub', href: 'https://github.com/Brandon094', icon: Github },
@@ -16,7 +28,11 @@ const ContactPage: React.FC = () => {
     <MainLayout>
       <section className="min-h-screen flex items-center justify-center bg-space-black relative overflow-hidden pt-40 pb-20">
 
-        {/* Dynamic Background Auras */}
+        {/*
+          Auras Dinámicas de Fondo:
+          Esferas de gradiente neón con órbitas y oscilaciones asíncronas independientes (mediante `delay: 2` en la segunda)
+          que alimentan la profundidad visual de la terminal sin entorpecer la legibilidad del texto superior.
+        */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
            <motion.div
              animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
@@ -33,7 +49,7 @@ const ContactPage: React.FC = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
 
-            {/* LEFT SIDE: STRATEGIC INFO */}
+            {/* PANEL IZQUIERDO: INFORMACIÓN ESTRATÉGICA Y ENLACES */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -52,6 +68,7 @@ const ContactPage: React.FC = () => {
                 </p>
               </div>
 
+              {/* Grid bidimensional de accesos directos de contacto */}
               <div className="grid grid-cols-2 gap-4">
                 {contactData.map((item, i) => (
                   <motion.a
@@ -59,6 +76,7 @@ const ContactPage: React.FC = () => {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    // Suave desplazamiento lateral e iluminación al pasar el mouse por encima
                     whileHover={{ x: 5, backgroundColor: 'rgba(255,255,255,0.05)' }}
                     className="flex items-center gap-4 p-5 rounded-2xl bg-white/[0.02] border border-white/5 transition-all group"
                   >
@@ -70,6 +88,7 @@ const ContactPage: React.FC = () => {
                 ))}
               </div>
 
+              {/* Firma de geolocalización de operaciones */}
               <div className="flex items-center gap-4 text-white/10 pt-10 border-t border-white/5">
                 <div className="p-2 bg-white/5 rounded-lg">
                   <MapPin className="w-4 h-4" />
@@ -78,7 +97,7 @@ const ContactPage: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* RIGHT SIDE: TERMINAL FORM */}
+            {/* PANEL DERECHO: NODO DE TERMINAL (FORMULARIO) */}
             <motion.div
               initial={{ opacity: 0, scale: 0.98, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -90,6 +109,8 @@ const ContactPage: React.FC = () => {
                 <div className="w-2 h-2 bg-cyber-emerald rounded-full animate-pulse" />
                 <span className="text-[9px] font-mono uppercase tracking-[0.5em]">Input Node: Active</span>
               </div>
+
+              {/* Inyección de la molécula del formulario */}
               <ContactForm />
             </motion.div>
 

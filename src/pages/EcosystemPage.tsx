@@ -1,9 +1,20 @@
+/**
+ * @file EcosystemPage.tsx
+ * @description Componente de nivel Página (Page) enfocado en exponer el 'Ecosistema Go' (RutaGo, AgroGo, CargoGo).
+ * Consolida la visión corporativa entrelazando múltiples bloques informativos estructurados en un grid responsivo.
+ *
+ * Brandon, como Líder y Fundador, esta página es el pilar maestro de tu portafolio empresarial.
+ * Define la sinergia de tus productos de software aplicando una composición limpia de datos estructurados (`pillars`)
+ * y animaciones cruzadas para guiar el flujo de lectura hacia tu llamado a la inversión final.
+ */
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Truck, Navigation, Leaf, Zap, Database, Fingerprint, Cloud, Smartphone, ChevronRight } from 'lucide-react';
 import MainLayout from '../components/templates/MainLayout';
 import FadeInSection from '../components/atoms/FadeInSection';
 
+// Arreglo de datos estructurados para renderizar declarativamente los pilares estratégicos de la empresa
 const pillars = [
   {
     id: 'rutago',
@@ -37,8 +48,9 @@ const pillars = [
 const EcosystemPage: React.FC = () => {
   return (
     <MainLayout>
+      {/* SECCIÓN HERO - INTRODUCCIÓN AL ECOSISTEMA */}
       <section className="pt-48 pb-20 relative overflow-hidden bg-space-black">
-        {/* Dynamic Blobs con más opacidad y color */}
+        {/* Auras dinámicas de iluminación con órbita continua */}
         <div className="absolute top-0 left-0 w-full h-full">
            <motion.div
              animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
@@ -71,7 +83,7 @@ const EcosystemPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ARCHITECTURE CHIPS - VIBRANT STEALTH */}
+      {/* BLOQUE HORIZONTAL: CARACTERÍSTICAS DE LA ARQUITECTURA */}
       <FadeInSection className="py-12 bg-white/[0.01] border-y border-white/5">
         <div className="container mx-auto px-4">
           <div className="flex justify-center lg:flex-row gap-4 max-w-5xl mx-auto">
@@ -99,7 +111,7 @@ const EcosystemPage: React.FC = () => {
         </div>
       </FadeInSection>
 
-      {/* PILLARS GRID */}
+      {/* GRID DE PILARES DE NEGOCIO */}
       <FadeInSection className="py-32">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -129,7 +141,7 @@ const EcosystemPage: React.FC = () => {
         </div>
       </FadeInSection>
 
-      {/* PIPELINE VIBRANT */}
+      {/* PIPELINE / HITOS DE DESARROLLO FUTURO */}
       <FadeInSection className="py-32 bg-white/[0.01] border-y border-white/5 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-cyber-purple/5 blur-[100px] -z-10" />
         <div className="container mx-auto px-6 text-center">
@@ -153,13 +165,9 @@ const EcosystemPage: React.FC = () => {
         </div>
       </FadeInSection>
 
-      {/* FINAL CTA VIBRANT */}
+      {/* ACCIÓN LLAMADO A LA INVERSIÓN (CTA) */}
       <section className="py-48 text-center px-6 relative">
-        <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyber-purple/10 blur-[120px] rounded-full -z-10"
-        />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyber-purple/10 blur-[120px] rounded-full -z-10" />
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
